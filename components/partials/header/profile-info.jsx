@@ -16,16 +16,41 @@ import {
 import { Icon } from "@iconify/react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import userImg from './cogtrain-user-img.png'
 
 const ProfileInfo = () => {
+  const [userData, setUserData] = useState(null);
   const { data: session } = useSession();
+
+  const router = useRouter();
+
+  const handleLogout = async () => {
+      // await signOut({ callbackUrl: "/en" }); // Redirect to login after logout
+      localStorage.removeItem("authToken"); // Clear token from storage
+      localStorage.clear();
+      router.replace("/en");
+  };
+
+  // ✅ Fetch user data from localStorage on mount
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedUser = localStorage.getItem("user");
+      if (storedUser) {
+        setUserData(JSON.parse(storedUser));
+      }
+    }
+  }, []);
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild className=" cursor-pointer">
         <div className=" flex items-center  ">
           {session?.user?.image && (
             <Image
-              src={session?.user?.image}
+              // src={session?.user?.image}
+              src={userImg}
               alt={session?.user?.name ?? ""}
               width={36}
               height={36}
@@ -38,7 +63,8 @@ const ProfileInfo = () => {
         <DropdownMenuLabel className="flex gap-2 items-center mb-1 p-3">
           {session?.user?.image && (
             <Image
-              src={session?.user?.image}
+              // src={session?.user?.image}
+              src={userImg}
               alt={session?.user?.name ?? ""}
               width={36}
               height={36}
@@ -53,7 +79,7 @@ const ProfileInfo = () => {
               href="/dashboard"
               className="text-xs text-default-600 hover:text-primary"
             >
-              @uxuidesigner
+              {userData?.email ?? "Admin"}
             </Link>
           </div>
         </DropdownMenuLabel>
@@ -168,7 +194,8 @@ const ProfileInfo = () => {
         </DropdownMenuGroup> */}
         <DropdownMenuSeparator className="mb-0 dark:bg-background" />
         <DropdownMenuItem
-          onSelect={() => signOut()}
+          // onSelect={() => signOut()}
+          onSelect={handleLogout}
           className="flex items-center gap-2 text-sm font-medium text-default-600 capitalize my-1 px-3 dark:hover:bg-background cursor-pointer"
         >
           <Icon icon="heroicons:power" className="w-4 h-4" />

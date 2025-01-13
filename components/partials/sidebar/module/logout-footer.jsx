@@ -2,10 +2,32 @@
 import { useSession, signIn, signOut } from "next-auth/react";
 import { Icon } from "@iconify/react";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AddBlock from "../common/add-block";
+import { useRouter } from "next/navigation";
+
 const LogoutFooter = ({ menus }) => {
+  const [userData, setUserData] = useState(null);
   const { data: session } = useSession();
+
+  const router = useRouter();
+
+   // ✅ Fetch user data from localStorage on mount
+   useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedUser = localStorage.getItem("user");
+      if (storedUser) {
+        setUserData(JSON.parse(storedUser));
+      }
+    }
+  }, []);
+
+  const handleLogout = async () => {
+    // await signOut({ callbackUrl: "/en" }); // Redirect to login after logout
+    localStorage.removeItem("authToken"); // Clear token from storage
+    localStorage.clear();
+    router.replace("/en");
+  };
 
   return (
     <>
@@ -17,13 +39,15 @@ const LogoutFooter = ({ menus }) => {
             {session?.user?.name}
           </div>
           <div className=" text-xs text-default-600  truncate">
-            {session?.user?.email}
+            {/* {session?.user?.email} */}
+            {userData?.email ?? "Admin"}
           </div>
         </div>
         <div className=" flex-none">
           <button
             type="button"
-            onClick={() => signOut()}
+            // onClick={() => signOut()}
+            onClick={handleLogout}
             className="  text-default-500 inline-flex h-9 w-9 rounded items-center  dark:bg-default-300 justify-center dark:text-default-900"
           >
             <Icon

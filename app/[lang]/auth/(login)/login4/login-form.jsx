@@ -46,8 +46,8 @@ const LogInForm = () => {
     resolver: zodResolver(schema),
     mode: "all",
     defaultValues: {
-      email: "admin@cogtrain.com",
-      password: "Admin@1234",
+      email: "test12@mail.com",
+      password: "password",
     },
   });
   const [isVisible, setIsVisible] = React.useState(false);
@@ -71,47 +71,10 @@ const LogInForm = () => {
   //   });
   // };
 
-  // const onSubmit = async (data) => {
-  //   startTransition(async () => {
-  //     try {
-  //       const response = await fetch("https://em4wuex6mh.ap-south-1.awsapprunner.com/api/auth/login", {
-  //         method: "POST",
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //         },
-  //         body: JSON.stringify({
-  //           email: data.email,
-  //           password: data.password,
-  //         }),
-  //       });
-  
-  //       const result = await response.json();
-  
-  //       if (!response.ok) {
-  //         throw new Error(result.message || "Login failed");
-  //       }
-  
-  //       // ✅ Store token in localStorage or cookies
-  //       localStorage.setItem("authToken", result.token);
-  //       localStorage.setItem("user", JSON.stringify(result.user));
-  
-  //       toast.success("Login Successful!");
-  
-  //       // ✅ Redirect user to dashboard
-  //       window.location.assign("/dashboard");
-  
-  //       reset(); // Reset form after login
-  //     } catch (error) {
-  //       console.error("Login error:", error.message);
-  //       toast.error(error.message);
-  //     }
-  //   });
-  // };
-
   const onSubmit = async (data) => {
     startTransition(async () => {
       try {
-        console.log("Logging in with:", data.email, data.password); // Debug log
+        console.log("Logging in with:", data.email, data.password);
   
         const response = await fetch(
           "https://em4wuex6mh.ap-south-1.awsapprunner.com/api/auth/login",
@@ -119,7 +82,7 @@ const LogInForm = () => {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              "Accept": "application/json", // Some APIs require this
+              "Accept": "application/json",
             },
             body: JSON.stringify({
               email: data.email,
@@ -128,7 +91,6 @@ const LogInForm = () => {
           }
         );
   
-        // If response is not OK, throw an error
         if (!response.ok) {
           const errorResponse = await response.json();
           throw new Error(errorResponse.message || "Login failed");
@@ -137,14 +99,21 @@ const LogInForm = () => {
         const result = await response.json();
         console.log("Login successful:", result);
   
-        // ✅ Store token in localStorage or cookies
+        // ✅ Store token in localStorage before redirection
         localStorage.setItem("authToken", result.token);
         localStorage.setItem("user", JSON.stringify(result.user));
   
         toast.success("Login Successful!");
   
-        // ✅ Redirect user to dashboard
-        window.location.assign("/dashboard");
+        // ✅ Correct the signIn function to ensure proper redirection
+        await signIn("credentials", {
+          email: data.email,
+          password: data.password,
+          redirect: false, // ✅ Prevent NextAuth from overriding redirection
+        });
+  
+        // ✅ Redirect manually to the correct dashboard page
+        window.location.href = "/en/dashboard";
   
         reset(); // Reset form after login
       } catch (error) {
@@ -153,6 +122,7 @@ const LogInForm = () => {
       }
     });
   };
+  
   
 
   
