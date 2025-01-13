@@ -112,8 +112,9 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
   title: {
-    default: "Your Site Name",
-    template: `%s - Your Site Name`,
+    default: "Cogtrain Dashboard",
+    // template: `%s - Your Site Name`,
+    template: `%s - Cogtrain`,
   },
   description: "Your site description goes here.",
 };

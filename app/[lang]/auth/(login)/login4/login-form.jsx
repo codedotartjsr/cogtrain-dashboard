@@ -45,10 +45,10 @@ const LogInForm = () => {
   } = useForm({
     resolver: zodResolver(schema),
     mode: "all",
-    defaultValues: {
-      email: "test12@mail.com",
-      password: "password",
-    },
+    // defaultValues: {
+    //   email: "test12@mail.com",
+    //   password: "password",
+    // },
   });
   const [isVisible, setIsVisible] = React.useState(false);
 

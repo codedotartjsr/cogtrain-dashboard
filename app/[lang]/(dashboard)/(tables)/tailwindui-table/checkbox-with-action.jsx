@@ -310,7 +310,7 @@ const CheckboxWithAction = () => {
                 onCheckedChange={handleSelectAll}
               /> */}
             </TableHead>
-            <TableHead>User</TableHead>
+            <TableHead>Patient</TableHead>
             {/* <TableHead>Title</TableHead> */}
             <TableHead>Email</TableHead>
             {/* <TableHead>Role</TableHead> */}
