@@ -6,9 +6,9 @@ import { getDictionary } from "@/app/dictionaries";
 const layout = async ({ children, params: { lang } }) => {
   const session = await getServerSession(authOptions);
 
-  if (!session?.user?.email) {
-    redirect("/auth/login");
-  }
+  // if (!session?.user?.email) {
+  //   redirect("/auth/login");
+  // }
 
   const trans = await getDictionary(lang);
 
