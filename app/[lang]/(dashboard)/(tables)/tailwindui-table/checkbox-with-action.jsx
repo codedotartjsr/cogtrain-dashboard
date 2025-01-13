@@ -224,7 +224,7 @@ import {
 } from "@/components/ui/table";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
-import Modal from "./modal"; // Ensure you have a Modal component
+// import Modal from "./modal"; // Ensure you have a Modal component
 import toast from "react-hot-toast";
 
 const CheckboxWithAction = () => {
@@ -350,12 +350,12 @@ const CheckboxWithAction = () => {
       </Table>
 
       {/* 📌 Show session data in a modal */}
-      {sessionData && (
+      {/* {sessionData && (
         <Modal isOpen={!!sessionData} onClose={() => setSessionData(null)}>
           <h2>Session Data for {selectedUser}</h2>
           <pre>{JSON.stringify(sessionData, null, 2)}</pre>
         </Modal>
-      )}
+      )} */}
 
       {/* 📌 Show loading status */}
       {loading && <p>Loading session data...</p>}
