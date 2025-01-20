@@ -224,7 +224,7 @@ import {
 } from "@/components/ui/table";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
-import Modal from "./modal"; // Ensure you have a Modal component
+// import Modal from "./modal"; // Ensure you have a Modal component
 import toast from "react-hot-toast";
 import SessionData from './session-data';
 
