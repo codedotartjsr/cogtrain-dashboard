@@ -15,22 +15,23 @@ import CheckboxWithAction from '../../(tables)/tailwindui-table/checkbox-with-ac
 
 const DashboardPageView = ({ trans }) => {
   return (
-    <div className="space-y-6">
+    <div className="space-y-3">
       <div className="flex items-center flex-wrap justify-between gap-4">
         <div className="text-2xl font-medium text-default-800 ">
-          Patient {trans?.dashboard}
+          {/* Patient {trans?.dashboard} */}
+          Patient Dashboard
         </div>
         {/* <DatePickerWithRange /> */}
       </div>
       {/* reports area */}
-      <div className="grid grid-cols-12  gap-6 ">
+      {/* <div className="grid grid-cols-12  gap-6 ">
         <div className="col-span-12 lg:col-span-8">
-          {/* <ReportsSnapshot /> */}
+          <ReportsSnapshot />
         </div>
         <div className="col-span-12 lg:col-span-4">
-          {/* <UsersStat /> */}
+          <UsersStat />
         </div>
-      </div>
+      </div> */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {/* <ReportsArea /> */}

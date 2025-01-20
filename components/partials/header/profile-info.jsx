@@ -50,7 +50,8 @@ const ProfileInfo = () => {
           {session?.user?.image && (
             <Image
               // src={session?.user?.image}
-              src={userImg}
+              // src={userImg}
+              src={'/images/cogtrain-user-img.png'}
               alt={session?.user?.name ?? ""}
               width={36}
               height={36}

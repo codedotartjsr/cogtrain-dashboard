@@ -211,7 +211,7 @@
 
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Icon } from "@iconify/react";
 import { Button } from "@/components/ui/button";
 import {
@@ -224,64 +224,89 @@ import {
 } from "@/components/ui/table";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
-// import Modal from "./modal"; // Ensure you have a Modal component
+import Modal from "./modal"; // Ensure you have a Modal component
 import toast from "react-hot-toast";
+import SessionData from './session-data';
 
 const CheckboxWithAction = () => {
   const [selectedRows, setSelectedRows] = useState([]);
   const [sessionData, setSessionData] = useState(null);
   const [selectedUser, setSelectedUser] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [users, setUsers] = useState([]);
+  const [showSessionData, setShowSessionData] = useState(false); // Toggle state
 
-  const users = [
-    {
-      id: "31edfe39-a8c1-40ab-9c8b-3cb17d781253",
-      name: "Mark Dsuza",
-      title: "Laravel Developer",
-      email: "markdsuza@gmail.com",
-      role: "admin",
-    },
-    {
-      id: "user-2",
-      name: "Josef Jennyfer",
-      title: "Front-end Developer",
-      email: "josefjennyfer@gmail.com",
-      role: "member",
-    },
-  ];
-
-  const handleSelectAll = () => {
-    if (selectedRows.length === users.length) {
-      setSelectedRows([]);
-    } else {
-      setSelectedRows(users.map((row) => row.id));
-    }
-  };
-
-  const handleRowSelect = (id) => {
-    setSelectedRows((prev) =>
-      prev.includes(id) ? prev.filter((rowId) => rowId !== id) : [...prev, id]
-    );
-  };
-
-  const fetchSessionData = async (userId) => {
+  const fetchUsers = async () => {
     setLoading(true);
-    setSelectedUser(userId);
-  
-    // Retrieve the token from localStorage (or from your auth state)
     const token = localStorage.getItem("authToken");
 
-    console.log("token", token);    
-  
     try {
       const response = await fetch(
-        // `https://em4wuex6mh.ap-south-1.awsapprunner.com/api/auth/tracking?userId=${userId}`,
-        `https://em4wuex6mh.ap-south-1.awsapprunner.com/api/auth/tracking`,
+        "https://em4wuex6mh.ap-south-1.awsapprunner.com/api/auth/therapist/patients", // Replace {{baseUrl}} with your actual base URL
         {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`, // 🔐 Include Bearer token
+            Authorization: `Bearer ${token}`, // Include Bearer token
+          },
+        }
+      );
+
+      if (!response.ok) throw new Error("Failed to fetch users");
+
+      const data = await response.json();
+      // Map data to include necessary patient details
+      const mappedUsers = data.map((item) => ({
+        id: item.patient.id,
+        name: item.patient.name,
+        email: item.patient.email,
+        phone: item.patient.phone,
+      }));
+      setUsers(mappedUsers);
+      // toast.success("Users loaded successfully!");
+    } catch (error) {
+      console.error("Error fetching users:", error);
+      toast.error("Error fetching users");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+  
+  // const handleSelectAll = () => {
+  //   if (selectedRows.length === users.length) {
+  //     setSelectedRows([]);
+  //   } else {
+  //     setSelectedRows(users.map((row) => row.id));
+  //   }
+  // };
+
+  // const handleRowSelect = (id) => {
+  //   setSelectedRows((prev) =>
+  //     prev.includes(id) ? prev.filter((rowId) => rowId !== id) : [...prev, id]
+  //   );
+  // };
+
+  const fetchSessionData = async (userId) => {
+    setLoading(true);
+    setSelectedUser(userId);
+
+    console.log("userId", userId);
+    
+  
+    const token = localStorage.getItem("authToken");
+  
+    try {
+      const response = await fetch(
+        `https://em4wuex6mh.ap-south-1.awsapprunner.com/api/auth/therapist/patient/${userId}/tracking`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`, // Include Bearer token
           },
         }
       );
@@ -290,6 +315,7 @@ const CheckboxWithAction = () => {
   
       const data = await response.json();
       setSessionData(data);
+      setShowSessionData(true);
       toast.success("Session data loaded successfully!");
     } catch (error) {
       console.error("Error fetching session data:", error);
@@ -297,24 +323,41 @@ const CheckboxWithAction = () => {
     } finally {
       setLoading(false);
     }
-  };  
+  };
+  
+  
+  // // If showSessionData is true, render only the SessionData component
+  // if (selectedUser && sessionData) {
+  //   return <SessionData data={sessionData} />;
+  // }
+
+   // If showSessionData is true, render only the SessionData component
+   if (showSessionData && sessionData) {
+    return (
+      <SessionData
+        data={sessionData}
+        onBack={() => setShowSessionData(false)} // Callback to show users
+      />
+    );
+  }
 
   return (
     <div>
+    {/* <h2 className="text-lg font-medium mb-4">User List</h2> */}
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>
-              {/* <Checkbox
+            {/* <TableHead>
+              <Checkbox
                 checked={selectedRows.length === users.length}
                 onCheckedChange={handleSelectAll}
-              /> */}
-            </TableHead>
+              />
+            </TableHead> */}
             <TableHead>Patient</TableHead>
             {/* <TableHead>Title</TableHead> */}
             <TableHead>Email</TableHead>
             {/* <TableHead>Role</TableHead> */}
-            <TableHead>Disease</TableHead>
+            <TableHead>Phone</TableHead>
             <TableHead>Action</TableHead>
           </TableRow>
         </TableHeader>
@@ -326,18 +369,18 @@ const CheckboxWithAction = () => {
               className="hover:bg-muted cursor-pointer"
               onClick={() => fetchSessionData(user.id)}
             >
-              <TableCell>
-                {/* <Checkbox
+              {/* <TableCell>
+                <Checkbox
                   checked={selectedRows.includes(user.id)}
                   onCheckedChange={() => handleRowSelect(user.id)}
-                /> */}
-              </TableCell>
+                />
+              </TableCell> */}
               <TableCell className="font-medium">{user.name}</TableCell>
               {/* <TableCell>{user.title}</TableCell> */}
               <TableCell>{user.email}</TableCell>
               <TableCell>
                 {/* <Badge variant="soft">{user.role}</Badge> */}
-                ................
+                {user.phone}
               </TableCell>
               <TableCell>
                 <Button size="icon" variant="outline">
@@ -348,17 +391,6 @@ const CheckboxWithAction = () => {
           ))}
         </TableBody>
       </Table>
-
-      {/* 📌 Show session data in a modal */}
-      {/* {sessionData && (
-        <Modal isOpen={!!sessionData} onClose={() => setSessionData(null)}>
-          <h2>Session Data for {selectedUser}</h2>
-          <pre>{JSON.stringify(sessionData, null, 2)}</pre>
-        </Modal>
-      )} */}
-
-      {/* 📌 Show loading status */}
-      {loading && <p>Loading session data...</p>}
     </div>
   );
 };
